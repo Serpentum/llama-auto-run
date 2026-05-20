@@ -8,6 +8,11 @@ env/
 venv/
 *.egg-info/
 
+# PyInstaller
+build/
+dist/
+*.spec
+
 # Settings
 launcher_settings.json
 
