@@ -330,7 +330,7 @@ class LauncherApp:
                 [exe_path] + args_list,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                bufsize=0,
+                bufsize=1,
                 creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0,
             )
         except FileNotFoundError as e:
