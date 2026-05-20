@@ -64,6 +64,8 @@ class LauncherApp:
 
         if not os.path.isfile(self.current_exe):
             self.root.after(100, self._warn_missing_exe)
+        if self.saved_model and not os.path.isfile(self.saved_model):
+            self.root.after(200, self._warn_missing_model)
 
     def _build_ui(self):
         self.root.columnconfigure(0, weight=1)
@@ -92,6 +94,13 @@ class LauncherApp:
         ttk.Label(exe_frame, text="llama-server.exe:").pack(side=tk.LEFT, padx=(0, 4))
         self.exe_var = tk.StringVar(value=os.path.basename(self.current_exe))
         ttk.Entry(exe_frame, textvariable=self.exe_var, width=45).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 4))
+
+        model_frame = ttk.Frame(self.root)
+        model_frame.pack(fill=tk.X, padx=10, pady=(0, 4))
+        ttk.Label(model_frame, text="Модель:").pack(side=tk.LEFT, padx=(0, 4))
+        self.model_var = tk.StringVar(value=self.saved_model or "")
+        ttk.Entry(model_frame, textvariable=self.model_var, width=45).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 4))
+        ttk.Button(model_frame, text="Выбрать модель", command=self._on_browse_model).pack(side=tk.LEFT, padx=(4, 0))
 
         ttk.Label(self.root, text="Параметры запуска:").pack(anchor=tk.W, padx=10, pady=(4, 2))
         args_frame = ttk.Frame(self.root)
@@ -494,6 +503,62 @@ class LauncherApp:
                 f"llama-server.exe не найден по пути:\n\n{self.current_exe}\n\n"
                 f"Положите файл рядом со скриптом или нажмите Выбрать exe для выбора."
             )
+
+    def _warn_missing_model(self):
+        path = filedialog.askopenfilename(
+            title="Выберите модель (.gguf)",
+            filetypes=[("GGUF Model", "*.gguf"), ("All", "*.*")],
+        )
+        if path:
+            self.model_var.set(path)
+            args_text = self.args_text.get("1.0", tk.END)
+            args_list = string_to_args_list(args_text)
+            for i, a in enumerate(args_list):
+                if a == "--model":
+                    args_list[i + 1] = path
+                    break
+            else:
+                args_list.extend(["--model", path])
+            self.args_text.delete("1.0", tk.END)
+            self.args_text.insert("1.0", args_list_to_string(args_list))
+            settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
+            save_settings({
+                "args": args_list,
+                "exe_path": self.current_exe,
+                "theme": self.theme_name,
+                "model": path,
+            }, settings_file)
+        else:
+            messagebox.showwarning(
+                "Модель не найдена",
+                f"Модель не найдена по пути:\n\n{self.saved_model}\n\n"
+                f"Нажмите Выбрать модель для выбора."
+            )
+
+    def _on_browse_model(self):
+        path = filedialog.askopenfilename(
+            title="Выберите модель (.gguf)",
+            filetypes=[("GGUF Model", "*.gguf"), ("All", "*.*")],
+        )
+        if path:
+            self.model_var.set(path)
+            args_text = self.args_text.get("1.0", tk.END)
+            args_list = string_to_args_list(args_text)
+            for i, a in enumerate(args_list):
+                if a == "--model":
+                    args_list[i + 1] = path
+                    break
+            else:
+                args_list.extend(["--model", path])
+            self.args_text.delete("1.0", tk.END)
+            self.args_text.insert("1.0", args_list_to_string(args_list))
+            settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
+            save_settings({
+                "args": args_list,
+                "exe_path": self.current_exe,
+                "theme": self.theme_name,
+                "model": path,
+            }, settings_file)
 
     def _on_close(self):
         if self._is_running:
