@@ -395,6 +395,7 @@ class LauncherApp:
             except Exception:
                 pass
 
+        self._stop_monitor()
         self._is_running = False
         self.proc = None
         self.log_thread = None
@@ -643,7 +644,6 @@ class LauncherApp:
             try:
                 if messagebox.askyesno("Выход", "Сервер запущен. Остановить и выйти?"):
                     self._on_stop()
-                    self._stop_monitor()
                     self.root.destroy()
             except tk.TclError:
                 pass
