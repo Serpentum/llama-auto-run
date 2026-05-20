@@ -6,6 +6,13 @@ import time
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog, scrolledtext
 
+
+def _get_base_path():
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(os.path.abspath(__file__))
+
+
 from autoLLAma.utils import sanitize_args, args_list_to_string, string_to_args_list, get_model_from_args
 from autoLLAma.settings import load_settings, save_settings
 from autoLLAma.monitor import get_cpu_usage, get_windows_memory_info, get_gpu_memory, format_bytes
@@ -56,8 +63,8 @@ class LauncherApp:
 
         self.status_var = tk.StringVar(value="⏸ Ожидание")
 
-        settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
-        _DEFAULT_EXE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "llama_server", "llama-server.exe")
+        settings_file = os.path.join(_get_base_path(), "..", "launcher_settings.json")
+        _DEFAULT_EXE = os.path.join(_get_base_path(), "..", "llama_server", "llama-server.exe")
 
         settings = load_settings(settings_file)
         if settings and "args" in settings:
@@ -303,7 +310,7 @@ class LauncherApp:
 
         exe_path = self.current_exe
         if not os.path.isabs(exe_path):
-            exe_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", exe_path)
+            exe_path = os.path.join(_get_base_path(), "..", exe_path)
 
         if not os.path.isfile(exe_path):
             self.current_exe = exe_path
@@ -318,7 +325,7 @@ class LauncherApp:
         if not os.path.isfile(saved_model):
             messagebox.showerror("Модель не найдена", f"Файл модели не существует:\n\n{saved_model}\n\nНажмите 'Выбрать модель' чтобы указать верный путь.")
             return
-        settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
+        settings_file = os.path.join(_get_base_path(), "..", "launcher_settings.json")
         save_settings({
             "args": args_list,
             "exe_path": exe_path,
@@ -464,7 +471,7 @@ class LauncherApp:
             self.theme_name = "dark"
             self.btn_theme.configure(text="Тёмная")
 
-        settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
+        settings_file = os.path.join(_get_base_path(), "..", "launcher_settings.json")
         settings = load_settings(settings_file) or {}
         settings["theme"] = self.theme_name
         save_settings(settings, settings_file)
@@ -561,7 +568,7 @@ class LauncherApp:
         if path:
             self.current_exe = path
             self.exe_var.set(os.path.basename(path))
-            settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
+            settings_file = os.path.join(_get_base_path(), "..", "launcher_settings.json")
             save_settings({
                 "args": string_to_args_list(self.args_text.get("1.0", tk.END)),
                 "exe_path": path,
@@ -592,7 +599,7 @@ class LauncherApp:
                 args_list.extend(["--model", path])
             self.args_text.delete("1.0", tk.END)
             self.args_text.insert("1.0", args_list_to_string(args_list))
-            settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
+            settings_file = os.path.join(_get_base_path(), "..", "launcher_settings.json")
             save_settings({
                 "args": args_list,
                 "exe_path": self.current_exe,
@@ -624,7 +631,7 @@ class LauncherApp:
                 args_list.extend(["--model", path])
             self.args_text.delete("1.0", tk.END)
             self.args_text.insert("1.0", args_list_to_string(args_list))
-            settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
+            settings_file = os.path.join(_get_base_path(), "..", "launcher_settings.json")
             save_settings({
                 "args": args_list,
                 "exe_path": self.current_exe,
@@ -648,7 +655,7 @@ class LauncherApp:
         raw_text = self.args_text.get("1.0", tk.END)
         args_list = string_to_args_list(raw_text)
         saved_model = get_model_from_args(args_list)
-        settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
+        settings_file = os.path.join(_get_base_path(), "..", "launcher_settings.json")
         save_settings({
             "args": args_list,
             "exe_path": self.current_exe,
@@ -665,7 +672,7 @@ class LauncherApp:
         if path:
             self.current_exe = path
             self.exe_var.set(os.path.basename(path))
-            settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
+            settings_file = os.path.join(_get_base_path(), "..", "launcher_settings.json")
             save_settings({
                 "args": string_to_args_list(self.args_text.get("1.0", tk.END)),
                 "exe_path": path,
