@@ -1,5 +1,6 @@
 import subprocess
 import ctypes
+import sys
 
 
 def get_windows_memory_info():
@@ -29,7 +30,8 @@ def get_cpu_usage():
     try:
         result = subprocess.run(
             ["wmic", "cpu", "get", "loadpercentage", "/format:list"],
-            capture_output=True, text=True, timeout=5
+            capture_output=True, text=True, timeout=5,
+            creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0,
         )
         for line in result.stdout.splitlines():
             if "=" in line:
@@ -45,7 +47,8 @@ def get_gpu_memory():
         result = subprocess.run(
             ["nvidia-smi", "--query-gpu=memory.used,memory.total",
              "--format=csv,noheader,nounits", "-i", "0"],
-            capture_output=True, text=True, timeout=5
+            capture_output=True, text=True, timeout=5,
+            creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0,
         )
         if result.returncode == 0:
             parts = result.stdout.strip().split(",")
