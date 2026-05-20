@@ -152,7 +152,7 @@ class LauncherApp:
     def _build_monitor_panel(self, parent):
         panel = ttk.Frame(parent)
         panel.configure(width=180)
-        panel.pack(side=tk.RIGHT, fill=tk.Y, padx=(0, 0))
+        panel.grid(row=0, column=1, sticky="ns", padx=(6, 0))
 
         ttk.Label(panel, text="Мониторинг", font=("Segoe UI", 11, "bold")).pack(pady=(6, 4))
 
