@@ -314,19 +314,8 @@ class LauncherApp:
         if not saved_model:
             messagebox.showerror("Ошибка", "В аргументах нет --model!\n\nНажмите 'Выбрать модель' чтобы указать путь.")
             return
-        
-        import os.path as osp
-        abs_path = osp.abspath(saved_model)
-        self._append_log_safe(f"[DEBUG] saved_model: {repr(saved_model)}")
-        self._append_log_safe(f"[DEBUG] abs_path: {repr(abs_path)}")
-        self._append_log_safe(f"[DEBUG] exists: {osp.exists(abs_path)}, isfile: {osp.isfile(abs_path)}")
-        self._append_log_safe(f"[DEBUG] model_var: {repr(self.model_var.get())}")
-        self._append_log_safe(f"[DEBUG] model_var exists: {osp.exists(self.model_var.get())}")
-        self._append_log_safe(f"[DEBUG] model_var isfile: {osp.isfile(self.model_var.get())}")
-        self._append_log_safe(f"[DEBUG] model_var abspath exists: {osp.exists(osp.abspath(self.model_var.get()))}")
-        
-        if not osp.isfile(abs_path):
-            messagebox.showerror("Модель не найдена", f"Файл модели не существует:\n\n{abs_path}\n\nПроверьте путь и нажмите 'Выбрать модель'.")
+        if not os.path.isfile(saved_model):
+            messagebox.showerror("Модель не найдена", f"Файл модели не существует:\n\n{saved_model}\n\nНажмите 'Выбрать модель' чтобы указать верный путь.")
             return
         settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
         save_settings({
