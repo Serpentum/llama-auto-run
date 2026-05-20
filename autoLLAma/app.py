@@ -275,6 +275,11 @@ class LauncherApp:
         if self._is_running:
             return
 
+        if not self.model_var.get().strip():
+            messagebox.showwarning("Модель не выбрана", "Выберите модель (.gguf) перед запуском сервера.")
+            self._check_model()
+            return
+
         raw_text = self.args_text.get("1.0", tk.END)
         args_list = string_to_args_list(raw_text)
         if not args_list:
@@ -292,6 +297,9 @@ class LauncherApp:
             return
 
         saved_model = get_model_from_args(args_list)
+        if saved_model and not os.path.isfile(saved_model):
+            self.root.after(100, self._warn_missing_model)
+            return
         settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
         save_settings({
             "args": args_list,
