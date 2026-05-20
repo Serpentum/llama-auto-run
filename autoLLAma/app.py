@@ -309,9 +309,11 @@ class LauncherApp:
 
         saved_model = get_model_from_args(args_list)
         if saved_model and not os.path.isfile(saved_model):
-            self._append_log_safe(f"[DEBUG] Проверка модели: {saved_model}")
-            self._append_log_safe(f"[DEBUG] exists: {os.path.exists(saved_model)}, isfile: {os.path.isfile(saved_model)}")
-            messagebox.showerror("Модель не найдена", f"Файл модели не существует:\n\n{saved_model}\n\nНажмите 'Выбрать модель' чтобы указать верный путь.")
+            debug_msg = f"[DEBUG] Проверка модели: {saved_model}\n[DEBUG] exists: {os.path.exists(saved_model)}, isfile: {os.path.isfile(saved_model)}"
+            self._append_log_safe(debug_msg)
+            with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "debug_model.txt"), "w", encoding="utf-8") as f:
+                f.write(debug_msg)
+            messagebox.showerror("Модель не найдена", f"Файл модели не существует:\n\n{saved_model}\n\nНажмите 'Выбрать модель' чтобы указать верный путь.\n\nПодробности в debug_model.txt")
             return
         settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
         save_settings({
