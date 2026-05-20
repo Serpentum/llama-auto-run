@@ -33,7 +33,7 @@ DEFAULT_ARGS = [
     "--presence-penalty", "0.0",
     "--repeat-penalty", "1.0",
     "--reasoning-budget", "-1",
-    "--chat-template-kwargs", "{\"preserve_thinking\": true}",
+    "--chat-template-kwargs", '{"preserve_thinking": true}',
     "--host", "0.0.0.0",
     "--port", "8033",
 ]
