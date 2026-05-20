@@ -43,7 +43,7 @@ def string_to_args_list(text):
         i += 1
     if current:
         tokens.append("".join(current))
-    return [t for t in tokens if t]
+    return [t.strip() for t in tokens if t.strip()]
 
 
 def get_model_from_args(args_list):
