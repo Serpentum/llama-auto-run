@@ -474,11 +474,26 @@ class LauncherApp:
         return time.strftime("%H:%M:%S")
 
     def _warn_missing_exe(self):
-        messagebox.showwarning(
-            "Файл не найден",
-            f"llama-server.exe не найден по пути:\n\n{self.current_exe}\n\n"
-            f"Положите файл рядом со скриптом или нажмите Выбрать exe для выбора."
+        path = filedialog.askopenfilename(
+            title="Выберите llama-server.exe",
+            filetypes=[("Executable", "*.exe"), ("All", "*.*")],
         )
+        if path:
+            self.current_exe = path
+            self.exe_var.set(os.path.basename(path))
+            settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
+            save_settings({
+                "args": string_to_args_list(self.args_text.get("1.0", tk.END)),
+                "exe_path": path,
+                "theme": self.theme_name,
+                "model": get_model_from_args(string_to_args_list(self.args_text.get("1.0", tk.END))),
+            }, settings_file)
+        else:
+            messagebox.showwarning(
+                "Файл не найден",
+                f"llama-server.exe не найден по пути:\n\n{self.current_exe}\n\n"
+                f"Положите файл рядом со скриптом или нажмите Выбрать exe для выбора."
+            )
 
     def _on_close(self):
         if self._is_running:
