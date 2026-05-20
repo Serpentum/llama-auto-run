@@ -317,9 +317,6 @@ class LauncherApp:
         if not os.path.isfile(saved_model):
             messagebox.showerror("Модель не найдена", f"Файл модели не существует:\n\n{saved_model}\n\nНажмите 'Выбрать модель' чтобы указать верный путь.")
             return
-        if not os.path.isfile(saved_model):
-            messagebox.showerror("Модель не найдена", f"Файл модели не существует:\n\n{saved_model}\n\nНажмите 'Выбрать модель' чтобы указать верный путь.")
-            return
         settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
         save_settings({
             "args": args_list,
