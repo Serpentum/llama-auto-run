@@ -309,6 +309,8 @@ class LauncherApp:
 
         saved_model = get_model_from_args(args_list)
         if saved_model and not os.path.isfile(saved_model):
+            self._append_log_safe(f"[DEBUG] Проверка модели: {saved_model}")
+            self._append_log_safe(f"[DEBUG] exists: {os.path.exists(saved_model)}, isfile: {os.path.isfile(saved_model)}")
             messagebox.showerror("Модель не найдена", f"Файл модели не существует:\n\n{saved_model}\n\nНажмите 'Выбрать модель' чтобы указать верный путь.")
             return
         settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
