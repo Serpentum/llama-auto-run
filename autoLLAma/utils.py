@@ -11,7 +11,8 @@ def args_list_to_string(args):
     parts = []
     for arg in args:
         if " " in arg or '"' in arg or "'" in arg:
-            parts.append(f"'{arg}'")
+            escaped = arg.replace("'", "\\'")
+            parts.append(f"'{escaped}'")
         else:
             parts.append(arg)
     return " ".join(parts)
@@ -27,7 +28,11 @@ def string_to_args_list(text):
     while i < len(text):
         ch = text[i]
         if in_quotes:
-            if ch == quote_char:
+            if ch == '\\' and i + 1 < len(text) and text[i + 1] == quote_char:
+                current.append(text[i + 1])
+                i += 2
+                continue
+            elif ch == quote_char:
                 in_quotes = False
             else:
                 current.append(ch)
