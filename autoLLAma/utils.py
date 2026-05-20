@@ -10,8 +10,8 @@ def sanitize_args(args_list):
 def args_list_to_string(args):
     parts = []
     for arg in args:
-        if " " in arg or '"' in arg:
-            parts.append(f'"{arg}"')
+        if " " in arg or '"' in arg or "'" in arg:
+            parts.append(f"'{arg}'")
         else:
             parts.append(arg)
     return " ".join(parts)
