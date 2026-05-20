@@ -146,6 +146,9 @@ class LauncherApp:
 
         self.log_text = tk.Text(console_inner, wrap=tk.NONE, font=("Consolas", 9),
                                 bg="#1e1e1e", fg="#d4d4d4", insertbackground="white", state=tk.DISABLED)
+        self.log_text.bind("<Control-c>", self._copy_log_text)
+        self.log_text.bind("<Control-C>", self._copy_log_text)
+        self.log_text.bind("<Button-3>", self._show_copy_menu)
         lv = ttk.Scrollbar(console_inner, orient=tk.VERTICAL, command=self.log_text.yview)
         lh = ttk.Scrollbar(console_inner, orient=tk.HORIZONTAL, command=self.log_text.xview)
         self.log_text.configure(yscrollcommand=lv.set, xscrollcommand=lh.set)
@@ -307,21 +310,12 @@ class LauncherApp:
             self.root.after(100, self._warn_missing_exe)
             return
 
-        saved_model = get_model_from_args(args_list)
-        debug_info = f"[DEBUG] model_var: {self.model_var.get()}\n[DEBUG] saved_model from args: {saved_model}\n[DEBUG] args_list: {args_list}\n"
-        if saved_model:
-            debug_info += f"[DEBUG] exists: {os.path.exists(saved_model)}, isfile: {os.path.isfile(saved_model)}"
-        else:
-            debug_info += f"[DEBUG] Модель НЕ найдена в args_list!"
-        self._append_log_safe(debug_info)
-        try:
-            debug_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "debug_model.txt")
-            with open(debug_file, "w", encoding="utf-8") as f:
-                f.write(debug_info)
-        except Exception as e:
-            self._append_log_safe(f"[DEBUG] Ошибка записи файла: {e}")
+    saved_model = get_model_from_args(args_list)
         if not saved_model:
-            messagebox.showerror("Ошибка", f"В аргументах нет --model!\n\n{debug_info}")
+            messagebox.showerror("Ошибка", "В аргументах нет --model!\n\nНажмите 'Выбрать модель' чтобы указать путь.")
+            return
+        if not os.path.isfile(saved_model):
+            messagebox.showerror("Модель не найдена", f"Файл модели не существует:\n\n{saved_model}\n\nНажмите 'Выбрать модель' чтобы указать верный путь.")
             return
         if not os.path.isfile(saved_model):
             messagebox.showerror("Модель не найдена", f"Файл модели не существует:\n\n{saved_model}\n\nНажмите 'Выбрать модель' чтобы указать верный путь.")
@@ -371,7 +365,7 @@ class LauncherApp:
             self._stop_monitor()
             self.status_var.set("❌ Ошибка")
             self._append_log_safe(f"[{self._timestamp()}] Процесс завершился с кодом {exit_code}")
-            model_info = f"\nМодель: {saved_model}" if saved_model else ""
+            model_info = f"\nМодель: {self.saved_model}" if getattr(self, 'saved_model', None) else ""
             messagebox.showerror("Ошибка сервера", f"llama-server.exe завершился с кодом {exit_code}{model_info}\n\nПроверьте путь к модели и файлу.")
             self.proc = None
             self.log_thread = None
@@ -508,6 +502,21 @@ class LauncherApp:
         self.log_text.configure(state=tk.NORMAL)
         self.log_text.delete("1.0", tk.END)
         self.log_text.configure(state=tk.DISABLED)
+
+    def _copy_log_text(self, event=None):
+        try:
+            text = self.log_text.selection_get()
+            self.root.clipboard_clear()
+            self.root.clipboard_append(text)
+            self.root.update()
+        except tk.TclError:
+            pass
+        return "break"
+
+    def _show_copy_menu(self, event):
+        menu = tk.Menu(self.root, tearoff=0)
+        menu.add_command(label="Копировать", command=self._copy_log_text)
+        menu.post(event.x_root, event.y_root)
 
     def _update_button_states(self):
         has_model = bool(self.model_var.get().strip())
