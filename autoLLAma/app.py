@@ -314,13 +314,17 @@ class LauncherApp:
         else:
             debug_info += f"[DEBUG] Модель НЕ найдена в args_list!"
         self._append_log_safe(debug_info)
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "debug_model.txt"), "w", encoding="utf-8") as f:
-            f.write(debug_info)
+        try:
+            debug_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "debug_model.txt")
+            with open(debug_file, "w", encoding="utf-8") as f:
+                f.write(debug_info)
+        except Exception as e:
+            self._append_log_safe(f"[DEBUG] Ошибка записи файла: {e}")
         if not saved_model:
             messagebox.showerror("Ошибка", f"В аргументах нет --model!\n\n{debug_info}")
             return
         if not os.path.isfile(saved_model):
-            messagebox.showerror("Модель не найдена", f"Файл модели не существует:\n\n{saved_model}\n\nНажмите 'Выбрать модель' чтобы указать верный путь.\n\nПодробности в debug_model.txt")
+            messagebox.showerror("Модель не найдена", f"Файл модели не существует:\n\n{saved_model}\n\nНажмите 'Выбрать модель' чтобы указать верный путь.")
             return
         settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
         save_settings({
