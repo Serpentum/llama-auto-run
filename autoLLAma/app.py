@@ -343,6 +343,19 @@ class LauncherApp:
         self.log_thread.start()
 
         self._append_log_safe(f"[{self._timestamp()}] Процесс запущен: PID={self.proc.pid}")
+        self.root.after(3000, self._check_process_alive)
+
+    def _check_process_alive(self):
+        if self.proc and self.proc.poll() is not None:
+            exit_code = self.proc.poll()
+            self._is_running = False
+            self._update_button_states()
+            self._stop_monitor()
+            self.status_var.set("❌ Ошибка")
+            self._append_log_safe(f"[{self._timestamp()}] Процесс завершился с кодом {exit_code}")
+            messagebox.showerror("Ошибка сервера", f"llama-server.exe завершился с кодом {exit_code}\nПроверьте путь к модели и файлу.")
+            self.proc = None
+            self.log_thread = None
 
     def _on_stop(self):
         if not self._is_running or self.proc is None:
