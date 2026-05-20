@@ -310,7 +310,7 @@ class LauncherApp:
             self.root.after(100, self._warn_missing_exe)
             return
 
-    saved_model = get_model_from_args(args_list)
+        saved_model = get_model_from_args(args_list)
         if not saved_model:
             messagebox.showerror("Ошибка", "В аргументах нет --model!\n\nНажмите 'Выбрать модель' чтобы указать путь.")
             return
