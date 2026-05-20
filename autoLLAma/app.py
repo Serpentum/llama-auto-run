@@ -106,8 +106,6 @@ class LauncherApp:
         self.model_warning = ttk.Label(model_frame, text="", foreground="#ff4444", font=("Segoe UI", 9))
         self.model_warning.pack(anchor=tk.W, padx=(140, 0), pady=(2, 0))
 
-        self._check_model()
-
         ttk.Label(self.root, text="Параметры запуска:").pack(anchor=tk.W, padx=10, pady=(4, 2))
         args_frame = ttk.Frame(self.root)
         args_frame.pack(fill=tk.X, padx=10, pady=(0, 4))
@@ -118,6 +116,8 @@ class LauncherApp:
         self.args_text.configure(yscrollcommand=args_scroll.set)
         self.args_text.pack(side=tk.LEFT, fill=tk.X, expand=True)
         args_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self._check_model()
 
         content_frame = ttk.Frame(self.root)
         content_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(4, 0))
