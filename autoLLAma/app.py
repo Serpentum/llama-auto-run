@@ -15,13 +15,28 @@ from autoLLAma.api_client import APIClient
 
 
 DEFAULT_ARGS = [
-    "--model", "models/your_model.gguf",
-    "--host", "127.0.0.1",
-    "--port", "8080",
-    "--n-gpu-layers", "99",
-    "--ctx-size", "4096",
-    "--batch-size", "512",
-    "--log-disable",
+    "--model", "Qwen3.6-35B-A3B-UD-Q4_K_M.gguf",
+    "--fit", "on",
+    "--fit-ctx", "128000",
+    "--fit-target", "256",
+    "-np", "1",
+    "-fa", "on",
+    "--no-mmap",
+    "--mlock",
+    "-b", "2048",
+    "-ub", "2048",
+    "-ctk", "q8_0",
+    "-ctv", "q8_0",
+    "--temp", "0.6",
+    "--top-p", "0.95",
+    "--top-k", "20",
+    "--min-p", "0.0",
+    "--presence-penalty", "0.0",
+    "--repeat-penalty", "1.0",
+    "--reasoning-budget", "-1",
+    "--chat-template-kwargs", "{\"preserve_thinking\": true}",
+    "--host", "0.0.0.0",
+    "--port", "8033",
 ]
 
 
