@@ -151,7 +151,6 @@ class LauncherApp:
 
     def _build_monitor_panel(self, parent):
         panel = ttk.Frame(parent)
-        panel.grid(row=0, column=1, sticky="ns", padx=(0, 0))
         panel.configure(width=180)
         panel.pack(side=tk.RIGHT, fill=tk.Y, padx=(0, 0))
 
