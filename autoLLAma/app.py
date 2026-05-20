@@ -22,7 +22,6 @@ DEFAULT_ARGS = [
     "--ctx-size", "4096",
     "--batch-size", "512",
     "--log-disable",
-    "-cb",
 ]
 
 
