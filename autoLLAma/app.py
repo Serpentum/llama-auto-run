@@ -646,7 +646,7 @@ class LauncherApp:
     def _on_save(self):
         raw_text = self.args_text.get("1.0", tk.END)
         args_list = string_to_args_list(raw_text)
-        saved_model = get_model_from_args(args_list)
+       saved_model = get_model_from_args(args_list)
         settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
         save_settings({
             "args": args_list,
