@@ -307,6 +307,7 @@ class LauncherApp:
             self.root.after(100, self._warn_missing_exe)
             return
 
+        saved_model = get_model_from_args(args_list)
         settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
         save_settings({
             "args": args_list,
