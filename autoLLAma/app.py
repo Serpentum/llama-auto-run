@@ -82,6 +82,7 @@ class LauncherApp:
 
         self._build_ui()
         self._update_button_states()
+        self._start_monitor()
 
         if not os.path.isfile(self.current_exe):
             self.root.after(100, self._warn_missing_exe)
@@ -352,7 +353,6 @@ class LauncherApp:
         self._start_time = time.time()
         self._update_button_states()
         self._update_model_label()
-        self._start_monitor()
 
         self.log_thread = LogReaderThread(
             self.proc, self.log_text, self.status_var, self._append_log_safe
@@ -367,7 +367,6 @@ class LauncherApp:
             exit_code = self.proc.poll()
             self._is_running = False
             self._update_button_states()
-            self._stop_monitor()
             self.status_var.set("❌ Ошибка")
             self._append_log_safe(f"[{self._timestamp()}] Процесс завершился с кодом {exit_code}")
             model_info = f"\nМодель: {self.saved_model}" if getattr(self, 'saved_model', None) else ""
@@ -396,7 +395,6 @@ class LauncherApp:
             except Exception:
                 pass
 
-        self._stop_monitor()
         self._is_running = False
         self.proc = None
         self.log_thread = None
@@ -645,10 +643,12 @@ class LauncherApp:
             try:
                 if messagebox.askyesno("Выход", "Сервер запущен. Остановить и выйти?"):
                     self._on_stop()
+                    self._stop_monitor()
                     self.root.destroy()
             except tk.TclError:
                 pass
         else:
+            self._stop_monitor()
             self.root.destroy()
 
     def _on_save(self):
