@@ -15,7 +15,6 @@ from autoLLAma.api_client import APIClient
 
 
 DEFAULT_ARGS = [
-    "--model", "Qwen3.6-35B-A3B-UD-Q4_K_M.gguf",
     "--fit", "on",
     "--fit-ctx", "128000",
     "--fit-target", "256",
@@ -78,8 +77,6 @@ class LauncherApp:
 
         if not os.path.isfile(self.current_exe):
             self.root.after(100, self._warn_missing_exe)
-        if self.saved_model and not os.path.isfile(self.saved_model):
-            self.root.after(200, self._warn_missing_model)
 
     def _build_ui(self):
         self.root.columnconfigure(0, weight=1)
