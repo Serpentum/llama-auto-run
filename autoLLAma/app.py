@@ -308,6 +308,9 @@ class LauncherApp:
             return
 
         saved_model = get_model_from_args(args_list)
+        if saved_model and not os.path.isfile(saved_model):
+            messagebox.showerror("Модель не найдена", f"Файл модели не существует:\n\n{saved_model}\n\nНажмите 'Выбрать модель' чтобы указать верный путь.")
+            return
         settings_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "launcher_settings.json")
         save_settings({
             "args": args_list,
@@ -353,7 +356,8 @@ class LauncherApp:
             self._stop_monitor()
             self.status_var.set("❌ Ошибка")
             self._append_log_safe(f"[{self._timestamp()}] Процесс завершился с кодом {exit_code}")
-            messagebox.showerror("Ошибка сервера", f"llama-server.exe завершился с кодом {exit_code}\nПроверьте путь к модели и файлу.")
+            model_info = f"\nМодель: {saved_model}" if saved_model else ""
+            messagebox.showerror("Ошибка сервера", f"llama-server.exe завершился с кодом {exit_code}{model_info}\n\nПроверьте путь к модели и файлу.")
             self.proc = None
             self.log_thread = None
 
