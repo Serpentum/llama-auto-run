@@ -24,15 +24,16 @@ class LogReaderThread(threading.Thread):
                     text = line.decode("latin-1", errors="replace").rstrip("\r\n")
                 if text:
                     self.append_log(text)
-            for line in self.proc.stderr:
-                if self._stop_event.is_set():
-                    break
-                try:
-                    text = line.decode("utf-8", errors="replace").rstrip("\r\n")
-                except Exception:
-                    text = line.decode("latin-1", errors="replace").rstrip("\r\n")
-                if text:
-                    self.append_log(text)
+            if self.proc.stderr and self.proc.stderr != self.proc.stdout:
+                for line in self.proc.stderr:
+                    if self._stop_event.is_set():
+                        break
+                    try:
+                        text = line.decode("utf-8", errors="replace").rstrip("\r\n")
+                    except Exception:
+                        text = line.decode("latin-1", errors="replace").rstrip("\r\n")
+                    if text:
+                        self.append_log(text)
         except Exception:
             pass
 

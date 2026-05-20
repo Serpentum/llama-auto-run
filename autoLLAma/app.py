@@ -330,7 +330,7 @@ class LauncherApp:
             self.proc = subprocess.Popen(
                 [exe_path] + args_list,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
                 bufsize=1,
                 creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0,
             )
