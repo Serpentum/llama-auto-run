@@ -93,14 +93,20 @@ class LauncherApp:
         exe_frame.pack(fill=tk.X, padx=10, pady=(0, 4))
         ttk.Label(exe_frame, text="llama-server.exe:").pack(side=tk.LEFT, padx=(0, 4))
         self.exe_var = tk.StringVar(value=os.path.basename(self.current_exe))
-        ttk.Entry(exe_frame, textvariable=self.exe_var, width=45).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 4))
+        ttk.Entry(exe_frame, textvariable=self.exe_var, width=45, state="readonly").pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 4))
 
         model_frame = ttk.Frame(self.root)
         model_frame.pack(fill=tk.X, padx=10, pady=(0, 4))
         ttk.Label(model_frame, text="Модель:").pack(side=tk.LEFT, padx=(0, 4))
         self.model_var = tk.StringVar(value=self.saved_model or "")
-        ttk.Entry(model_frame, textvariable=self.model_var, width=45).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 4))
+        self.model_entry = ttk.Entry(model_frame, textvariable=self.model_var, width=45, state="readonly")
+        self.model_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 4))
         ttk.Button(model_frame, text="Выбрать модель", command=self._on_browse_model).pack(side=tk.LEFT, padx=(4, 0))
+
+        self.model_warning = ttk.Label(model_frame, text="", foreground="#ff4444", font=("Segoe UI", 9))
+        self.model_warning.pack(anchor=tk.W, padx=(140, 0), pady=(2, 0))
+
+        self._check_model()
 
         ttk.Label(self.root, text="Параметры запуска:").pack(anchor=tk.W, padx=10, pady=(4, 2))
         args_frame = ttk.Frame(self.root)
@@ -456,14 +462,24 @@ class LauncherApp:
         self.log_text.configure(state=tk.DISABLED)
 
     def _update_button_states(self):
+        has_model = bool(self.model_var.get().strip())
         if self._is_running:
             self.btn_start.configure(state=tk.DISABLED)
             self.btn_stop.configure(state=tk.NORMAL)
             self.args_text.configure(state=tk.DISABLED)
         else:
-            self.btn_start.configure(state=tk.NORMAL)
+            self.btn_start.configure(state=tk.NORMAL if has_model else tk.DISABLED)
             self.btn_stop.configure(state=tk.DISABLED)
             self.args_text.configure(state=tk.NORMAL)
+
+    def _check_model(self):
+        has_model = bool(self.model_var.get().strip())
+        if has_model:
+            self.model_warning.configure(text="")
+            self.model_entry.configure(style="TEntry")
+        else:
+            self.model_warning.configure(text="⚠ Выберите модель (.gguf) перед запуском")
+        self._update_button_states()
 
     def _update_timer(self):
         if self._is_running:
@@ -528,6 +544,7 @@ class LauncherApp:
                 "theme": self.theme_name,
                 "model": path,
             }, settings_file)
+            self._check_model()
         else:
             messagebox.showwarning(
                 "Модель не найдена",
@@ -559,6 +576,7 @@ class LauncherApp:
                 "theme": self.theme_name,
                 "model": path,
             }, settings_file)
+            self._check_model()
 
     def _on_close(self):
         if self._is_running:
